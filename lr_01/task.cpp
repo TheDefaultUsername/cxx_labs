@@ -15,7 +15,7 @@
 //func>DECLARE
 
 int main() {
-    >>
+    
 }
 
 //funcs
