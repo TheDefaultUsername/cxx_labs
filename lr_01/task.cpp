@@ -21,16 +21,21 @@ class Item {
     public:
         Item():
             _type(0),_amount(1),_status(1.0)
-        {}
+        {
+            std::cout << "CSTLOG>>stdcstusd.\n";
+        }
         Item(const Item &item) 
         {
             _type=item._type;
             _amount=item._amount;
             _status=item._status;
+            std::cout << "CSTLOG>>itmcpycstusd.\n";
         }
         Item(int amount, int type, double status):
             _type(type),_amount(amount),_status(status)
-        {}
+        {
+            std::cout << "CSTLOG>>nwcstmcstusd.\n";
+        }
 
         Item& Corrupt(double value)
         {
@@ -41,6 +46,7 @@ class Item {
             if (_status<0.01) {
                 _status=0.01;
             }
+            std::cout << "ITMLOG>>itmcrptd.\n";
             return *this;
         }
         Item& Repair(double value)
@@ -49,11 +55,13 @@ class Item {
             if (_status>1.0) {
                 _status=1.0;
             }
+            std::cout << "ITMLOG>>itmrprd.\n";
             return *this;
         }
         Item& ChangeType(int type)
         {
             _type=type;
+            std::cout << "ITMLOG>>tpcngd.\n";
             return *this;
         }
 
@@ -62,30 +70,61 @@ class Item {
             _type=item._type;
             _amount=item._amount;
             _status=item._status;
+            std::cout << "OPRLOG>>cpyopr.\n";
             return *this;
         }
-        Item& operator+ (int amount)
+        Item operator+ (int amount)
         {
-            _amount=_amount+amount;
-            return *this;
+            Item buf(*this);
+            buf._amount+=amount;
+            std::cout << "OPRLOG>>addopr.\n";
+            return buf;
         }
-        Item& operator++ ()
-        {
-            _amount++;
-            return *this;
-        }
+//WIP        Item& operator++ ()
+//WIP        {
+//WIP            _amount++;
+//WIP            std::cout << "OPRLOG>>incopr.\n";
+//WIP            return *this;
+//WIP        }
         
-        bool operator== (const Item &item);
+        bool operator== (const Item &item) {
+            std::cout << "OPRLOG>>iseqopr.\n";
+            if ((_type==item._type)&&(_status==item._status)) {
+                return true;
+            }
+            return false;
+        }
 
         friend std::ostream& operator<< (std::ostream& stream, const Item &item) {
             stream << "Item:\nAmount: " << item._amount << "\nType: " << item._type << "\nStatus: " << item._status << "\n";
         }
 
         ~Item()
-        {}
+        {
+            std::cout << "DSTLOG>>itmdstusd.\n";
+        }
 };
 
 int main() {
-    
+    {
+        Item item0;
+        static Item item1;
+        std::cout<<"static item1 created\n"<<item1<<"destructing item0(nonstatic standart item) and creating new item(3::1::0.74)\n";
+    }
+    Item item2(3,1,0.74);
+    std::cout<<"item2 created\n"<<item2<<"creating new item as item2\n";
+    Item item3(item2);
+    Item* item4 = new Item[1];
+    *item4=item3;
+    item4->Corrupt(0.5);
+    if (item2==item3) {
+        std::cout<<"created item3 as item2\n"<<item3<<"created item4 on heap, item4 copyed item3, item4 corrupted 0.5\n"<<item4<<"\n"<<*item4;
+    }
+    //*item4++;
+    *item4=*item4+2;
+    item4->Repair(1.0);
+    item4->ChangeType(2);
+    std::cout<<"item4 added 2, repaired, changed type\n"<<*item4;
+    return 0;
 }
 
