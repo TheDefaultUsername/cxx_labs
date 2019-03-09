@@ -80,12 +80,12 @@ class Item {
             std::cout << "OPRLOG>>addopr.\n";
             return buf;
         }
-//WIP        Item& operator++ ()
-//WIP        {
-//WIP            _amount++;
-//WIP            std::cout << "OPRLOG>>incopr.\n";
-//WIP            return *this;
-//WIP        }
+        Item& operator++ (int idk_what_is_it)
+        {
+            *this=*this+idk_what_is_it+1;
+            std::cout << "OPRLOG>>incopr.\n";
+            return *this;
+        }
         
         bool operator== (const Item &item) {
             std::cout << "OPRLOG>>iseqopr.\n";
@@ -120,11 +120,11 @@ int main() {
     if (item2==item3) {
         std::cout<<"created item3 as item2\n"<<item3<<"created item4 on heap, item4 copyed item3, item4 corrupted 0.5\n"<<item4<<"\n"<<*item4;
     }
-    //*item4++;
+    (*item4)++;
     *item4=*item4+2;
     item4->Repair(1.0);
     item4->ChangeType(2);
-    std::cout<<"item4 added 2, repaired, changed type\n"<<*item4;
+    std::cout<<"item4 inscreased, added 2, repaired, changed type\n"<<*item4;
     return 0;
 }
 
