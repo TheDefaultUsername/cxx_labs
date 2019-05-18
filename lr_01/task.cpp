@@ -125,7 +125,7 @@ int main() {
     item4->Repair(1.0);
     item4->ChangeType(2);
     std::cout<<"item4 inscreased, added 2, repaired, changed type\n"<<*item4<<item4<<"\n";
-    delete item4;
+    delete[] item4;
     return 0;
 }
 
