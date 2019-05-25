@@ -1,7 +1,7 @@
 #ifndef ARRAYTEMPLATE_H
 #define ARRAYTEMPLATE_H
 
-
+#include <stdexcept>
 
 template <typename T>
 class Array {
@@ -14,7 +14,7 @@ class Array {
     }
     Array(): ArrayPointer(NULL), LastElement(-1), sizeOfArray(0) {}
     Array(const T &firstElement): ArrayPointer(NULL), sizeOfArray(8), LastElement(0) {
-        ArrayPointer= new T[8]; 
+        ArrayPointer= reinterpret_cast<T*>(new char[sizeof(T)*8]); 
         ArrayPointer[0]=firstElement;
     }
     Array(const Array<T> &oldArray): ArrayPointer(NULL), LastElement(-1), sizeOfArray(0) {
@@ -49,30 +49,34 @@ class Array {
     private:
     void cpy(T* oldPointer, T* newPointer, const int &LastElementOffset) {
         if (LastElementOffset<0) {return;}
-        if ((newPointer>oldPointer)&&(newPointer<(oldPointer+LastElementOffset))) {
-            for (int i=LastElementOffset; i>=0; i--) {
+        if ((newPointer>oldPointer)&&(newPointer<(oldPointer+LastElementOffset))) { //сдвиг вправо
+                new(newPointer+LastElementOffset) T(*(oldPointer+LastElementOffset));
+            for (int i=LastElementOffset-1; i>=0; i--) {
+                (newPointer+i)->~T();
                 new(newPointer+i) T(*(oldPointer+i));
             }          
-        } else if ((oldPointer>newPointer)&&(oldPointer<(newPointer+LastElementOffset))) {
+        } else if ((oldPointer>newPointer)&&(oldPointer<(newPointer+LastElementOffset))) { //сдвиг влево
             for (int i = 0; i<=LastElementOffset; i++) {
+                (newPointer+i)->~T();
                 new(newPointer+i) T(*(oldPointer+i));
             }
 
         } else {
-            for (int i = 0; i<=LastElementOffset; i++) {
+            for (int i = 0; i<=LastElementOffset; i++) { //несравнимые адресы => копия в другой массив
+                (newPointer+i)->~T();
                 new(newPointer+i) T(*(oldPointer+i));
             }
         }
     }
     void reserve(const size_t &neededSize) {
         if (!ArrayPointer) {
-            ArrayPointer = new T[8];
+            ArrayPointer = reinterpret_cast<T*>(new char[sizeof(T)*8]);
             LastElement = -1;
             sizeOfArray = 8;
         }
         while (neededSize>=sizeOfArray) {       
             sizeOfArray=sizeOfArray<<1;
-            T* newptr = new T[sizeOfArray];
+            T* newptr = reinterpret_cast<T*>(new char[sizeof(T)*sizeOfArray]);
             cpy(ArrayPointer,newptr,LastElement);
             delete[] ArrayPointer;
             ArrayPointer=newptr;
@@ -85,13 +89,14 @@ class Array {
     public:
     void add(const T &newElement) {
         if (!ArrayPointer) {
-            ArrayPointer = new T[8];
+            ArrayPointer = reinterpret_cast<T*>(new char[sizeof(T)*8]);
             ArrayPointer[0]=newElement;
             LastElement = 0;
             sizeOfArray=8;
         } else {
             reserve(LastElement + 1);
             LastElement++;
+            (ArrayPointer+LastElement)->~T();
             new(ArrayPointer+LastElement) T(newElement);
         }
     }
@@ -103,6 +108,7 @@ class Array {
             reserve(LastElement+1);
             LastElement++;
             cpy(ArrayPointer+pos,ArrayPointer+pos+1,LastElement-pos);
+            (ArrayPointer+pos)->~T();
             new(ArrayPointer+pos) T(newElement);
         }
     }
@@ -118,6 +124,9 @@ class Array {
         optimize();
     }
     T operator[] (const int &offset) {
+        if ((offset<0)||(offset>LastElement)) {
+            throw std::out_of_range("Array::[] out of range");
+        }
         return *(ArrayPointer+offset);
     }
     void operator= (const Array<T> &array) {

@@ -42,6 +42,11 @@ int main (void) {
         std::cout << testarray2[i] << " ";
     }
     std::cout<<std::endl;
+    std::cout<<"Copyed Array : ";
+    for (int i = 0; i<=testarray.ioLastElement(); i++) {
+        std::cout << testarray[i] << " ";
+    }
+    std::cout<<std::endl;
 
     return 0;
 }
