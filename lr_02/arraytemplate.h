@@ -25,16 +25,20 @@ class Array {
     class iterator {
         T* currentPointer;
         public:
-        iterator(): currentPointer(begin()) {}
+        iterator(): currentPointer(NULL) {}
         iterator(T* cp): currentPointer(cp) {}
         T& operator*() {return *currentPointer;}
         void operator=(const iterator& iter) {currentPointer=iter.currentPointer;}
-        void operator++(int) {currentPointer++;}
-        void operator++() {currentPointer++;}
-        void operator--() {currentPointer--;}
-        void operator--(int) {currentPointer--;}
+        iterator operator++(int) {currentPointer++; return currentPointer;}
+        iterator operator++() {currentPointer++; return currentPointer;}
+        iterator operator--() {currentPointer--; return currentPointer;}
+        iterator operator--(int) {currentPointer--; return currentPointer;}
         bool operator== (const iterator& iter) {return (currentPointer==iter.currentPointer);}
         bool operator!= (const iterator& iter) {return (currentPointer!=iter.currentPointer);}
+        bool operator>= (const iterator& iter) {return (currentPointer>=iter.currentPointer);}
+        bool operator<= (const iterator& iter) {return (currentPointer>=iter.currentPointer);}
+        bool operator> (const iterator& iter) {return (currentPointer>iter.currentPointer);}
+        bool operator< (const iterator& iter) {return (currentPointer<iter.currentPointer);}
     };
     iterator begin() {
         return iterator(ArrayPointer);

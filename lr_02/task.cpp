@@ -12,14 +12,15 @@ int main (void) {
     testarray.add((10));
     testarray.add((9));
     std::cout<<"Array : ";
-    for (Array<int>::iterator iter = testarray.begin(); iter!=testarray.end(); iter++) {
+    Array<int>::iterator iter;
+    for (iter = testarray.begin(); iter!=testarray.end(); iter++) {
         std::cout << *iter << " ";
     }
     std::cout<<std::endl;
-    std::cout<<"Erase №3 (#4) : ";
+    std::cout<<"Erase №3 (#4) (inverted) : ";
     testarray.eraze(3);
-    for (int i = 0; i<=testarray.ioLastElement(); i++) {
-        std::cout << testarray[i] << " ";
+    for (Array<int>::iterator iter2 = (iter--)--; iter2>=testarray.begin(); iter2--) {
+        std::cout << *iter2 << " ";
     }
     std::cout<<std::endl;
     std::cout<<"Insert 5 at pos 3 : ";
